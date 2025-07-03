@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.apachecommons.CommonsLog;
 
 @Entity
 @Table(name = "user_contacts")
@@ -19,6 +18,7 @@ import lombok.extern.apachecommons.CommonsLog;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Contact {
+
     @Id
     private String id;
 
@@ -32,7 +32,7 @@ public class Contact {
     @Size(min = 10, max = 15, message = "Phone number must be between 10 and 15 digits")
     private String phoneNumber;
 
-    @Size(max = 500 , message = "Address must not exceed 500 characters")
+    @Size(max = 500, message = "Address must not exceed 500 characters")
     private String address;
 
     @Column(length = 1000)
@@ -69,6 +69,6 @@ public class Contact {
     private String cloudinaryImagePublicId;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "user-contact")
     private User user;
 }

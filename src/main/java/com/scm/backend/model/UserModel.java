@@ -13,7 +13,7 @@ public class UserModel extends RepresentationModel<UserModel> {
     private String id;
     private String name;
     private String email;
-    private String password;
+//    private String password;
     private String about;
     private String profilePicture;
     private String phoneNumber;

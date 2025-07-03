@@ -1,6 +1,6 @@
 package com.scm.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,8 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class User {
     private String id;
 
     @Column(nullable = false)
-    @NotBlank(message = "User name is required")
+    @NotBlank(message = "User  name is required")
     private String name;
 
     @NotBlank(message = "Email is required")
@@ -35,7 +36,8 @@ public class User {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 8 , message = "Password must be at least 8 characters long")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
+//    @JsonIgnore
     private String password;
 
     @Lob
@@ -52,13 +54,23 @@ public class User {
     private boolean phoneVerified = false;
 
     @Enumerated(value = EnumType.STRING)
-    // SELF, GOOGLE, FACEBOOK, TWITTER, LINKEDIN, GITHUB
     private Providers provider = Providers.SELF;
 
     private String emailToken;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
-    @JsonManagedReference
-    private Set<Contact> contacts = new LinkedHashSet<>();
-}
+    @ManyToMany(fetch = FetchType.EAGER , cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    @JsonIgnore // Prevent circular reference during serialization
+    private Set<Role> roles = new HashSet<>();
 
+    @Getter
+    @Setter
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    // Additional methods can be added here if needed
+}
